@@ -2,15 +2,15 @@
 
 My attempts at advent of code over the years (not including 2019-2021 which are in independent repos).
 
-### Run Day Solution
-
-**Prerequisites**
+### Prerequisites
 
 -   Get your advent of code session key from cookies and set it as an environment variable.
 
 ```bash
 $ export AOC_SESSION=YOUR_TOKEN_HERE
 ```
+
+### Run Day Solution
 
 To test and submit python solutions run
 
