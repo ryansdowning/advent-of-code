@@ -67,7 +67,7 @@ def part_b(data):
 
 if __name__ == "__main__":
     with open("{input_path}", 'r') as fp:
-        data = fp.read()
+        data = fp.read().strip()
 
     data = parse(data)
 
@@ -94,6 +94,4 @@ if __name__ == "__main__":
 """
     if not default_solution_path.parent.exists():
         default_solution_path.parent.mkdir(parents=True, exist_ok=True)
-        (default_solution_path.parent / "__init__.py").write_bytes(b"")
-        (default_solution_path.parent.parent / "__init__.py").write_bytes(b"")
     default_solution_path.write_text(solution_template)

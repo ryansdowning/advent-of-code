@@ -27,7 +27,7 @@ def part_b(data):
 
 if __name__ == "__main__":
     with open("/home/ryan/Desktop/repos/aoc/aoc-all/inputs/2018/day01.txt", "r") as fp:
-        data = fp.read()
+        data = fp.read().strip()
 
     data = parse(data)
 
