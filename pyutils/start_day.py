@@ -37,13 +37,13 @@ if __name__ == "__main__":
     if inputs_dir is None:
         inputs_dir = Path(__file__).parent.parent.resolve() / "inputs/"
 
-    if not inputs_dir.exists():
-        inputs_dir.mkdir(parents=True)
+    inputs_year_dir = inputs_dir / str(args.year)
+    if not inputs_year_dir.exists():
+        inputs_year_dir.mkdir(parents=True, exist_ok=True)
 
     data = get_data(day=args.day, year=args.year)
-
-    inputs_path = inputs_dir / str(args.year) / f"day{args.day:02d}.txt"
-    inputs_path.write_text(data)
+    input_path = inputs_year_dir / f"day{args.day:02d}.txt"
+    input_path.write_text(data)
 
     solution_template = f"""import time
 from copy import deepcopy
@@ -66,7 +66,7 @@ def part_b(data):
 
 
 if __name__ == "__main__":
-    with open("{inputs_path}", 'r') as fp:
+    with open("{input_path}", 'r') as fp:
         data = fp.read()
 
     data = parse(data)
@@ -95,4 +95,5 @@ if __name__ == "__main__":
     if not default_solution_path.parent.exists():
         default_solution_path.parent.mkdir(parents=True, exist_ok=True)
         (default_solution_path.parent / "__init__.py").write_bytes(b"")
+        (default_solution_path.parent.parent / "__init__.py").write_bytes(b"")
     default_solution_path.write_text(solution_template)
