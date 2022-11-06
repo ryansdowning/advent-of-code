@@ -18,7 +18,7 @@ def format_time(seconds: float) -> str:
     return str(seconds)
 
 
-def timeit(func: Callable[[...], Any], *args, max_time=15, **kwargs) -> tuple[float, list[float], Any]:
+def timeit(func: Callable[..., Any], *args, max_time=15, **kwargs) -> tuple[float, list[float], Any]:
     runs = []
 
     args_copy = deepcopy(args)

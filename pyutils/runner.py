@@ -42,7 +42,6 @@ if __name__ == "__main__":
         stem = Path(file).stem
         MODULES[stem] = import_module(f"{pkg_name}.{stem}", pkg_name)
     MODULES = sorted(((stem, module) for stem, module in MODULES.items()), key=lambda x: x[0])
-    print(f"{MODULES=}")
     print(f"Starting runner for {args.year}")
 
     for stem, module in MODULES:

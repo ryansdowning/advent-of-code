@@ -13,13 +13,7 @@ parser.add_argument(
 parser.add_argument(
     "--day", "-d", type=int, help="day of the advent-of-code challenge", default=datetime.datetime.now().day
 )
-parser.add_argument(
-    "--inputs-path",
-    "-i",
-    type=utils.str_to_dir,
-    default=Path(__file__).parent.parent.resolve() / "inputs",
-    help="Path to directory to store inputs",
-)
+parser.add_argument("--inputs-dir", "-i", type=utils.str_to_dir)
 parser.add_argument(
     "--solution-path",
     "-s",
@@ -31,7 +25,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not args.solution_path:
-        default_solution_path = Path(__file__).parent.parent.resolve() / f"2022/python/day{args.day:02d}.py"
+        default_solution_path = Path(__file__).parent.parent.resolve() / f"{args.year}/python/day{args.day:02d}.py"
         if default_solution_path.exists():
             raise FileExistsError(
                 f"Solution path was not provided and the default path ({default_solution_path}) already exists"
@@ -39,10 +33,17 @@ if __name__ == "__main__":
     else:
         default_solution_path = args.solution_path
 
+    inputs_dir = args.inputs_dir
+    if inputs_dir is None:
+        inputs_dir = Path(__file__).parent.parent.resolve() / "inputs/"
+
+    if not inputs_dir.exists():
+        inputs_dir.mkdir(parents=True)
+
     data = get_data(day=args.day, year=args.year)
-    inputs_path = args.inputs_path / str(args.year) / f"day{args.day:02d}.txt"
-    with open(inputs_path, "w") as fp:
-        fp.write(data)
+
+    inputs_path = inputs_dir / str(args.year) / f"day{args.day:02d}.txt"
+    inputs_path.write_text(data)
 
     solution_template = f"""import time
 from copy import deepcopy
@@ -53,15 +54,15 @@ from pyutils import utils
 
 
 def parse(data):
-    pass
+    return
 
 
 def part_a(data):
-    pass
+    return
 
 
 def part_b(data):
-    pass
+    return
 
 
 if __name__ == "__main__":
@@ -91,4 +92,7 @@ if __name__ == "__main__":
     print(f"Part B finished in {{utils.format_time(elapsed_b)}} with solution: {{solution_b}}, submitting...")
     submit(solution_b, part="b", day={args.day}, year={args.year})
 """
+    if not default_solution_path.parent.exists():
+        default_solution_path.parent.mkdir(parents=True, exist_ok=True)
+        (default_solution_path.parent / "__init__.py").write_bytes(b"")
     default_solution_path.write_text(solution_template)
