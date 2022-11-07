@@ -1,3 +1,4 @@
+import re
 import time
 from copy import deepcopy
 
@@ -5,17 +6,78 @@ from aocd import submit
 
 from pyutils import utils
 
-
-def parse(data):
-    return
+LINE_RE = re.compile("Step ([A-Z]) must be finished before step ([A-Z]) can begin.")
 
 
-def part_a(data):
-    return
+def solve_dependency_order(dependency_graph):
+    """
+    Variation of pyutils.graph.solve_dependency_order which only pops one unconstrained dependency (the min) per step.
+    """
+    dependency_graph = deepcopy(dependency_graph)
+    dependencies = set(dependency_graph.keys())
+    dependency_order = []
+
+    while dependencies:
+        has_no_remaining_dep = set(filter(lambda dep: not dependency_graph[dep], dependencies))
+        if not has_no_remaining_dep:
+            raise ValueError
+
+        requirement = min(has_no_remaining_dep)
+        dependency_order.append(requirement)
+        dependencies.remove(requirement)
+        for req in dependency_graph:
+            dependency_graph[req].discard(requirement)
+
+    return tuple(dependency_order)
+
+
+def parse(data: str) -> list[tuple[str, str]]:
+    return list(map(lambda line: LINE_RE.match(line).groups(), data.split("\n")))
+
+
+def _part_a(data: list[tuple[str, str]]) -> str:
+    dependencies = {root: set() for root in [i for j in data for i in j]}
+    for dependency, node in data:
+        dependencies[node].add(dependency)
+
+    order = solve_dependency_order(dependencies)
+    return dependencies, "".join(order)
+
+
+def part_a(data: list[tuple[str, str]]) -> str:
+    _, order = _part_a(data)
+    return order
 
 
 def part_b(data):
-    return
+    dependencies, order = _part_a(data)
+
+    dependency_graph = deepcopy(dependencies)
+    dependencies = set(dependencies.keys())
+    jobs = []
+
+    seconds = 0
+    while dependencies:
+        has_no_remaining_dep = set(
+            filter(lambda dep: not dependency_graph[dep] and dep not in {req for req, _ in jobs}, dependencies)
+        )
+
+        for requirement in sorted(has_no_remaining_dep):
+            if len(jobs) < 5:
+                jobs.append((requirement, ord(requirement) - 4))
+
+        jobs = [(requirement, remaining - 1) for requirement, remaining in jobs]
+        seconds += 1
+
+        for requirement, remaining in jobs:
+            if remaining == 0:
+                dependencies.remove(requirement)
+                for req in dependency_graph:
+                    dependency_graph[req].discard(requirement)
+
+        jobs = [(requirement, remaining) for requirement, remaining in jobs if remaining != 0]
+
+    return seconds
 
 
 if __name__ == "__main__":
