@@ -8,10 +8,18 @@ from pyutils import utils
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--year", "-y", type=int, help="year of the advent-of-code challenge", default=datetime.datetime.now().year
+    "--year",
+    "-y",
+    type=int,
+    help="year of the advent-of-code challenge",
+    default=datetime.datetime.now().year,
 )
 parser.add_argument(
-    "--day", "-d", type=int, help="day of the advent-of-code challenge", default=datetime.datetime.now().day
+    "--day",
+    "-d",
+    type=int,
+    help="day of the advent-of-code challenge",
+    default=datetime.datetime.now().day,
 )
 parser.add_argument("--inputs-dir", "-i", type=utils.str_to_dir)
 parser.add_argument(

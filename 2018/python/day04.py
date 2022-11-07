@@ -1,27 +1,63 @@
 import datetime
+import re
 import time
+from collections import defaultdict
 from copy import deepcopy
 
 from aocd import submit
 
 from pyutils import utils
 
-
-def parse_line(data):
-    date, msg = data.split(" ")
-    return datetime.strptime(date, "[%Y-%m-%d] %H:%M"), msg
+RE_START_SHIFT = re.compile(r"Guard #(\d+) begins shift")
 
 
-def parse(data):
-    return list(map(parse_line, data.split("\n")))
+def parse_line(data: str) -> tuple[datetime.datetime, str]:
+    date, msg = data.split("] ")
+    return datetime.datetime.strptime(date, "[%Y-%m-%d %H:%M"), msg
 
 
-def part_a(data):
-    return
+def parse(data: str) -> dict[int, list[tuple[datetime.date, int, int]]]:
+    data = list(map(parse_line, data.split("\n")))
+    data = sorted(data, key=lambda x: x[0])
+
+    sleep_intervals: dict[int, list[tuple[datetime.date, int, int]]] = defaultdict(list)
+    curr_guard = None
+    start_sleep = None
+    for time, event in data:
+        if (guard := RE_START_SHIFT.match(event)) is not None:
+            curr_guard = int(guard.group(1))
+        elif event == "falls asleep":
+            start_sleep = time.minute
+        elif event == "wakes up":
+            sleep_intervals[curr_guard].append((time.date, start_sleep, time.minute))
+
+    return sleep_intervals
 
 
-def part_b(data):
-    return
+def get_minute_sleep_frequency(intervals: list[datetime.date, int, int]) -> list[int]:
+    sleep_tracker = [0 for _ in range(60)]
+    for _, a, b in intervals:
+        for i in range(a - 1, b - 1):
+            sleep_tracker[i] += 1
+    return sleep_tracker
+
+
+def part_a(data: dict[int, list[tuple[datetime.date, int, int]]]) -> int:
+    total_sleep = {guard: sum(b - a for (_, a, b) in intervals) for guard, intervals in data.items()}
+    sleepy_guard = max(total_sleep, key=total_sleep.get)
+
+    sleep_frequency = get_minute_sleep_frequency(data[sleepy_guard])
+    sleepy_minute = max(range(60), key=sleep_frequency.__getitem__) + 1
+
+    return sleepy_guard * sleepy_minute
+
+
+def part_b(data: dict[int, list[tuple[datetime.date, int, int]]]) -> int:
+    sleep_frequencies = {guard: get_minute_sleep_frequency(intervals) for guard, intervals in data.items()}
+    max_frequencies = {guard: max(frequencies) for guard, frequencies in sleep_frequencies.items()}
+    sleepy_guard = max(max_frequencies, key=max_frequencies.get)
+    sleepy_minute = max(range(60), key=sleep_frequencies[sleepy_guard].__getitem__) + 1
+    return sleepy_guard * sleepy_minute
 
 
 if __name__ == "__main__":

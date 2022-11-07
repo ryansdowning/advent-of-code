@@ -51,7 +51,7 @@ if __name__ == "__main__":
         print(f"Running day {day}")
 
         with open(inputs_dir / f"{stem}.txt", "r") as fp:
-            time, runs, data = utils.timeit(fp.read, max_time=args.max_time)
+            time, runs, data = utils.timeit(lambda: fp.read().strip(), max_time=args.max_time)
         print(utils.format_results("Reading", time, runs, verbose=verbose))
 
         time, runs, data = utils.timeit(module.parse, data=data, max_time=args.max_time)
