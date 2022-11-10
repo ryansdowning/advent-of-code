@@ -83,7 +83,7 @@ if __name__ == "__main__":
     print("Running day {args.day} part A")
     start_a = time.perf_counter()
 
-    solution_a = part_a(data)
+    solution_a = part_a(data_a)
 
     stop_a = time.perf_counter()
     elapsed_a = stop_a - start_a
