@@ -31,9 +31,10 @@ def timeit(func: Callable[..., Any], *args, max_time=15, **kwargs) -> tuple[floa
     runs.append(total_elapsed)
 
     est_runs = max_time // total_elapsed
-    est_runs = 10 ** (math.floor(math.log10(est_runs))) - 1
+    if est_runs > 10:
+        est_runs = 10 ** (math.floor(math.log10(est_runs))) - 1
 
-    for _ in range(est_runs):
+    for _ in range(int(est_runs)):
         args_copy = deepcopy(args)
         kwargs_copy = deepcopy(kwargs)
         start = perf_counter()
@@ -53,7 +54,7 @@ def format_results(name, total_elapsed, runs, result=None, verbose=2):
 
     n = len(runs)
     mu = total_elapsed / n
-    std = stdev(runs)
+    std = stdev(runs) if len(runs) > 1 else 0
     name = f"{name}:"
     line1 = f"{name:<8}{format_time(mu):>8} ± {format_time(std):<8} per loop (mean ± std. dev. of {n} loops)"
 
