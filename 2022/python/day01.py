@@ -1,28 +1,62 @@
 import time
 from copy import deepcopy
 
+import matplotlib.pyplot as plt
 from aocd import submit
 
-from pyutils import utils
+from pyutils import parsing, utils
 
 
 def parse(data):
-    elves = data.split("\n\n")
-    items = [list(map(int, elf.split("\n"))) for elf in elves]
+    items = parsing.recursively_split(data, [("\n\n", None), ("\n", lambda x: list(map(int, x)))])
     totals = [sum(cals) for cals in items]
     return totals
 
 
 def part_a(data):
+    # Visualization.
+    # max_idx = max(range(len(data)), key=lambda idx: data[idx])
+    # colors = ["#1f77b4"] * len(data)
+    # colors[max_idx] = "r"
+    # fig, ax = plt.subplots(1, figsize=(15, 6))
+    # ax.bar(range(len(data)), data, color=colors)
+    # rect = ax.patches[max_idx]
+    # height = rect.get_height()
+    # ax.text(
+    #     rect.get_x() + rect.get_width() / 2, height + 5, data[max_idx], ha="center", va="bottom"
+    # )
+    # ax.set_xlabel("Elf ID")
+    # ax.set_ylabel("Calories")
+    # fig.savefig("viz/2022/2022-01-a.png")
+    # End Visualization.
     return max(data)
 
 
 def part_b(data):
-    cals = 0
-    for _ in range(3):
-        max_idx = max(range(len(data)), key=lambda idx: data[idx])
-        cals += data[max_idx]
-        data.pop(max_idx)
+    idxs = sorted(range(len(data)), key=lambda idx: data[idx])
+    top = idxs[-3:]
+    cals = sum(data[idx] for idx in top)
+
+    # Visualization.
+    # colors = ["#1f77b4"] * len(data)
+    # fig, ax = plt.subplots(1, figsize=(15, 6))
+    # ax.set_xlabel("Elf ID")
+    # ax.set_ylabel("Calories")
+    # for idx in top:
+    #     colors[idx] = "r"
+
+    # ax.bar(range(len(data)), data, color=colors)
+    # rects = ax.patches
+    # for idx in top:
+    #     rect = rects[idx]
+    #     height = rect.get_height()
+    #     ax.text(
+    #         rect.get_x() + rect.get_width() / 2, height + 5, data[idx], ha="center", va="bottom"
+    #     )
+
+    # fig.savefig("viz/2022/2022-01-b.png")
+    # End visualization.
+
     return cals
 
 
