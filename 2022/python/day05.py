@@ -19,6 +19,13 @@ def parse_start(start: str) -> list[list[str]]:
     return columns
 
 
+def parse(data: str) -> tuple[list[list[str]], list[tuple[int, int, int]]]:
+    start, moves = data.split("\n\n")
+    stacks = parse_start(start)
+    moves = [tuple(map(int, MOVE_RE.match(move).groups())) for move in moves.split("\n")]
+    return stacks, moves
+
+
 def process_move(
     stacks: list[list[str]], quantity: int, stack1: int, stack2: int, *, is_part_b: bool = False
 ) -> list[list[str]]:
@@ -31,27 +38,20 @@ def process_move(
     return stacks
 
 
-def parse(data: str) -> tuple[list[list[str]], list[tuple[int, int, int]]]:
-    start, moves = data.split("\n\n")
-    stacks = parse_start(start)
-    moves = [tuple(map(int, MOVE_RE.match(move).groups())) for move in moves.split("\n")]
-    return stacks, moves
+def solution(data: tuple[list[list[str]], list[tuple[int, int, int]]], is_part_b: False) -> str:
+    stacks, moves = data
+    for move in moves:
+        stacks = process_move(stacks, *move, is_part_b=is_part_b)
+
+    return "".join(stack[0] for stack in stacks)
 
 
 def part_a(data: tuple):
-    stacks, moves = data
-    for move in moves:
-        stacks = process_move(stacks, *move)
-
-    return "".join(stack[0] for stack in stacks)
+    return solution(data, False)
 
 
 def part_b(data):
-    stacks, moves = data
-    for move in moves:
-        stacks = process_move(stacks, *move, is_part_b=True)
-
-    return "".join(stack[0] for stack in stacks)
+    return solution(data, True)
 
 
 if __name__ == "__main__":
