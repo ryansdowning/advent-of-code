@@ -75,7 +75,7 @@ def part_b(data):
 
 if __name__ == "__main__":
     with open("{input_path}", 'r') as fp:
-        data = fp.read().strip()
+        data = fp.read().rstrip()
 
     data = parse(data)
 
