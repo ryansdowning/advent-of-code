@@ -3,6 +3,7 @@ from collections import defaultdict
 from copy import deepcopy
 
 from aocd import submit
+from rich.live import Live
 
 from pyutils import utils
 
@@ -24,7 +25,7 @@ def parse(data):
 #             return i + 14
 
 
-def solution(data: str, marker_len: int) -> int:
+def solution_no_viz(data: str, marker_len: int) -> int:
     marker = set()
     count = defaultdict(int)
 
@@ -42,6 +43,38 @@ def solution(data: str, marker_len: int) -> int:
         marker.add(chr1)
         if count[chr0] == 0:
             marker.remove(chr0)
+
+
+def solution_viz(data: str, marker_len: int) -> int:
+    marker = set()
+    count = defaultdict(int)
+
+    with Live("", refresh_per_second=100) as live:
+        for chr in data[:marker_len]:
+            live.update(f"[red]{''.join(marker)}")
+            count[chr] += 1
+            marker.add(chr)
+            time.sleep(0.001)
+
+        for i, (chr0, chr1) in enumerate(zip(data, data[marker_len:]), marker_len):
+            live.update(f"[red]{''.join(marker)}")
+            if len(marker) == marker_len:
+                live.update(f"[green]{''.join(marker)}")
+                return i
+
+            count[chr0] -= 1
+            count[chr1] += 1
+
+            marker.add(chr1)
+            if count[chr0] == 0:
+                marker.remove(chr0)
+            time.sleep(0.001)
+
+
+def solution(data: str, marker_len: int, viz: bool = False) -> int:
+    if viz:
+        return solution_viz(data, marker_len)
+    return solution_no_viz(data, marker_len)
 
 
 def part_a(data: str) -> int:
