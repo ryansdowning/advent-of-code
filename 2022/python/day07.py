@@ -3,6 +3,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Optional
 
+import plotly.graph_objects as go
 from aocd import submit
 
 from pyutils import utils
@@ -29,9 +30,20 @@ class Filesystem:
         self.dirs.append(filesystem)
         return filesystem
 
+    def get_path(self):
+        paths = [self.name]
+        curr = self.parent
+        while curr is not None:
+            paths.append(curr.name)
+            curr = curr.parent
+
+        return "/".join(reversed(paths))
+
+    def get_file_size(self):
+        return sum(file.size for file in self.files)
+
     def get_total_size(self):
-        total = sum(file.size for file in self.files)
-        return total + sum(filesystem.get_total_size() for filesystem in self.dirs)
+        return self.get_file_size() + sum(filesystem.get_total_size() for filesystem in self.dirs)
 
     def get_sizes(self):
         sizes = [self.get_total_size()]
@@ -39,8 +51,14 @@ class Filesystem:
             sizes.extend(filesystem.get_sizes())
         return sizes
 
+    def get_treemap_data(self):
+        data = [(self.get_file_size(), self.get_path(), self.parent.get_path() if self.parent is not None else "/")]
+        for filesystem in self.dirs:
+            data.extend(filesystem.get_treemap_data())
+        return data
 
-def parse(data: str) -> Filesystem:
+
+def parse(data: str, viz: bool = False) -> Filesystem:
     data = data.split("$ ")[1:]
     root_filesystem = Filesystem("")
     curr_filesystem = root_filesystem
@@ -60,6 +78,13 @@ def parse(data: str) -> Filesystem:
                 if not file.startswith("dir"):
                     size, file = file.split(" ")
                     curr_filesystem.files.add(File(file, int(size)))
+
+    if viz:
+        values, names, parents = list(zip(*root_filesystem.get_treemap_data()))
+        fig = go.Figure(go.Treemap(values=values, labels=names, parents=parents, root_color="lightgrey"))
+
+        fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
+        fig.write_image("viz/2022/07-a.png")
 
     return root_filesystem
 
