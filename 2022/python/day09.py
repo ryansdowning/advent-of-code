@@ -7,36 +7,24 @@ from pyutils import utils
 from pyutils.parsing import recursively_split
 
 
-def parse(data):
+def parse(data: str) -> list[tuple[str, int]]:
     return recursively_split(data, [("\n", None), (" ", lambda x: (x[0], int(x[1])))])
 
 
 DIR_MAP = {"U": (0, 1), "D": (0, -1), "R": (1, 0), "L": (-1, 0)}
 
 
-def update_tail(h, t):
+def update_knot(h: tuple[int, int], t: tuple[int, int]) -> tuple[int, int]:
     xd, yd = h[0] - t[0], h[1] - t[1]
     x = y = 0
-    if xd > 1:
-        x += 1
+    if xd > 1 or xd < -1:
+        x += 1 if xd > 1 else -1
         if yd > 0:
             y += 1
         elif yd < 0:
             y -= 1
-    elif xd < -1:
-        x -= 1
-        if yd > 0:
-            y += 1
-        elif yd < 0:
-            y -= 1
-    elif yd > 1:
-        y += 1
-        if xd > 0:
-            x += 1
-        elif xd < 0:
-            x -= 1
-    elif yd < -1:
-        y -= 1
+    elif yd > 1 or yd < -1:
+        y += 1 if yd > 1 else -1
         if xd > 0:
             x += 1
         elif xd < 0:
@@ -44,7 +32,7 @@ def update_tail(h, t):
     return (t[0] + x, t[1] + y)
 
 
-def part_a(data):
+def part_a(data: list[tuple[int, int]]) -> int:
     h = (0, 0)
     t = (0, 0)
     ts = {t}
@@ -53,12 +41,12 @@ def part_a(data):
         xd, yd = DIR_MAP[direction]
         for _ in range(steps):
             h = (h[0] + xd, h[1] + yd)
-            t = update_tail(h, t)
+            t = update_knot(h, t)
             ts.add(t)
     return len(ts)
 
 
-def part_b(data):
+def part_b(data: list[tuple[int, int]]) -> int:
     knots = [(0, 0)] * 10
     ts = {(0, 0)}
 
@@ -67,7 +55,7 @@ def part_b(data):
         for _ in range(steps):
             knots[0] = (knots[0][0] + xd, knots[0][1] + yd)
             for prev, curr in zip(range(10), range(1, 10)):
-                knots[curr] = update_tail(knots[prev], knots[curr])
+                knots[curr] = update_knot(knots[prev], knots[curr])
             ts.add(knots[-1])
     return len(ts)
 
