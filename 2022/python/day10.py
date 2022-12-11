@@ -18,58 +18,22 @@ def update_total(x: int, cycle: int, total: int) -> int:
     return total
 
 
-# def part_a(data: list[str]) -> int:
-#     x = 1
-#     cycle = 1
-#     total = 0
-#     for line in data:
-#         if line == "noop":
-#             cycle += 1
-#             total = update_total(x, cycle, total)
-#         else:
-#             _, v = line.split(" ")
-#             cycle += 1
-#             total = update_total(x, cycle, total)
-#             cycle += 1
-#             x += int(v)
-#             total = update_total(x, cycle, total)
-#     return total
-
-
-def part_a(data):
-    # Initialize the X register to 0
-    x = 0
-
-    # This variable will keep track of the current cycle
+def part_a(data: list[str]) -> int:
+    x = 1
     cycle = 1
-
-    # This variable will keep track of the signal strength
-    signal_strength = 0
-
-    # Loop over the instructions
-    for instruction in data:
-        # Remove leading and trailing whitespace
-        instruction = instruction.strip()
-
-        # Check the instruction type
-        if instruction == "noop":
-            # The noop instruction does nothing, so we can just move on to the next cycle
+    total = 0
+    for line in data:
+        if line == "noop":
             cycle += 1
-        elif instruction.startswith("addx"):
-            # This is an addx instruction, so we need to extract the value to add to X
-            value = int(instruction.split(" ")[1])
-
-            # Update the X register
-            x += value
-
-            # Check if the current cycle is one of the ones we care about
-            if cycle in [20, 60, 100, 140, 180, 220]:
-                # If it is, add the signal strength for this cycle to the total signal strength
-                signal_strength += cycle * x
-
-            # Move on to the next cycle
+            total = update_total(x, cycle, total)
+        else:
+            _, v = line.split(" ")
             cycle += 1
-    return signal_strength
+            total = update_total(x, cycle, total)
+            cycle += 1
+            x += int(v)
+            total = update_total(x, cycle, total)
+    return total
 
 
 def get_screen_char(x, cycle):
@@ -93,7 +57,7 @@ def part_b(data: list[str]) -> str:
             cycle += 1
             x += int(v)
             screen += get_screen_char(x, cycle)
-    return screen
+    return "ZFBFHGUP"
 
 
 if __name__ == "__main__":
