@@ -50,14 +50,9 @@ def get_edges(grid, i, j):
 
 def get_all_edges(grid, i, j):
     edges = []
-    if i > 0:
-        edges.append((i - 1, j))
-    if i < len(grid) - 1:
-        edges.append((i + 1, j))
-    if j > 0:
-        edges.append((i, j - 1))
-    if j < len(grid[0]) - 1:
-        edges.append((i, j + 1))
+    for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        if abs(y) + abs(x) == 1 and 0 <= i + x < len(grid) and 0 <= j + y < len(grid[0]):
+            edges.append((i + x, j + y))
     return edges
 
 
@@ -68,12 +63,11 @@ def build_graph(grid):
         for j, chr in enumerate(row):
             if chr == "S":
                 start = (i, j)
-                graph[start] = get_all_edges(grid, i, j)
+                grid[i][j] = "a"
             elif chr == "E":
                 end = (i, j)
-                graph[end] = get_all_edges(grid, i, j)
-            else:
-                graph[(i, j)] = get_edges(grid, i, j)
+                grid[i][j] = "a"
+            graph[(i, j)] = get_edges(grid, i, j)
     return graph, start, end
 
 
