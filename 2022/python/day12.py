@@ -66,7 +66,7 @@ def build_graph(grid):
                 grid[i][j] = "a"
             elif chr == "E":
                 end = (i, j)
-                grid[i][j] = "a"
+                grid[i][j] = "z"
             graph[(i, j)] = get_edges(grid, i, j)
     return graph, start, end
 
