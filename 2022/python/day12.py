@@ -34,40 +34,32 @@ class Graph:
         return dist
 
 
-def get_edges(grid, i, j):
-    edges = []
-    e_cap = ord(grid[i][j]) + 1
+def get_neighbors(grid, i, j):
+    neighbors = []
+    elevation_max = ord(grid[i][j]) + 1
     for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
         if (
             abs(y) + abs(x) == 1
             and 0 <= i + x < len(grid)
             and 0 <= j + y < len(grid[0])
-            and ord(grid[i + x][j + y]) <= e_cap
+            and ord(grid[i + x][j + y]) <= elevation_max
         ):
-            edges.append((i + x, j + y))
-    return edges
-
-
-def get_all_edges(grid, i, j):
-    edges = []
-    for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        if abs(y) + abs(x) == 1 and 0 <= i + x < len(grid) and 0 <= j + y < len(grid[0]):
-            edges.append((i + x, j + y))
-    return edges
+            neighbors.append((i + x, j + y))
+    return neighbors
 
 
 def build_graph(grid):
     graph = {}
     start = end = None
     for i, row in enumerate(grid):
-        for j, chr in enumerate(row):
-            if chr == "S":
+        for j, char in enumerate(row):
+            if char == "S":
                 start = (i, j)
                 grid[i][j] = "a"
-            elif chr == "E":
+            elif char == "E":
                 end = (i, j)
                 grid[i][j] = "z"
-            graph[(i, j)] = get_edges(grid, i, j)
+            graph[(i, j)] = get_neighbors(grid, i, j)
     return graph, start, end
 
 
