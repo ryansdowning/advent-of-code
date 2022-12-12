@@ -37,15 +37,14 @@ class Graph:
 def get_edges(grid, i, j):
     edges = []
     e_cap = ord(grid[i][j]) + 1
-    for x in (-1, 0, 1):
-        for y in (-1, 0, 1):
-            if (
-                abs(y) + abs(x) == 1
-                and 0 <= i + x < len(grid)
-                and 0 <= j + y < len(grid[0])
-                and ord(grid[i + x][j + y]) <= e_cap
-            ):
-                edges.append((i + x, j + y))
+    for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        if (
+            abs(y) + abs(x) == 1
+            and 0 <= i + x < len(grid)
+            and 0 <= j + y < len(grid[0])
+            and ord(grid[i + x][j + y]) <= e_cap
+        ):
+            edges.append((i + x, j + y))
     return edges
 
 
