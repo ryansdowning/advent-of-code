@@ -1,7 +1,7 @@
 import heapq
 import time
 from copy import deepcopy
-from typing import TypeVar
+from typing import Callable, TypeVar
 
 from aocd import submit
 
@@ -33,17 +33,24 @@ class Graph:
                         heapq.heappush(heap, (neighbor, alt))
         return dist
 
+    def bfs(self, source: T, is_goal: Callable[[T], bool]):
+        visited = set()
+        queue = {source}
+        steps = 1
+        while queue:
+            queue = set(neighbor for node in queue for neighbor in self.graph[node] if neighbor not in visited)
+            visited |= queue
+            if any(is_goal(node) for node in queue):
+                return steps
+            steps += 1
+        return float("inf")
+
 
 def get_neighbors(grid, i, j):
     neighbors = []
     elevation_max = ord(grid[i][j]) + 1
     for x, y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        if (
-            abs(y) + abs(x) == 1
-            and 0 <= i + x < len(grid)
-            and 0 <= j + y < len(grid[0])
-            and ord(grid[i + x][j + y]) <= elevation_max
-        ):
+        if 0 <= i + x < len(grid) and 0 <= j + y < len(grid[0]) and ord(grid[i + x][j + y]) <= elevation_max:
             neighbors.append((i + x, j + y))
     return neighbors
 
@@ -59,24 +66,27 @@ def build_graph(grid):
             elif char == "E":
                 end = (i, j)
                 grid[i][j] = "z"
+    for i, row in enumerate(grid):
+        for j, char in enumerate(row):
             graph[(i, j)] = get_neighbors(grid, i, j)
     return graph, start, end
 
 
 def parse(data):
-    return list(map(lambda line: list(line), data.split("\n")))
+    grid = list(map(lambda line: list(line), data.split("\n")))
+    graph, start, end = build_graph(grid)
+    return Graph(graph), start, end, grid
 
 
 def part_a(data):
-    graph, start, end = build_graph(data)
-    graph = Graph(graph)
-    dist = graph.dijkstra(start)
-    print(dist[end])
-    return
+    graph, start, end, _ = data
+    return graph.bfs(start, lambda node: node == end)
 
 
 def part_b(data):
-    return
+    graph, _, end, grid = data
+    starts = [(x, y) for x, y in graph.graph if grid[x][y] == "a"]
+    return min(graph.bfs(coord, lambda node: node == end) for coord in starts)
 
 
 if __name__ == "__main__":
