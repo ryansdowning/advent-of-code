@@ -11,7 +11,8 @@ LINE_RE = re.compile("Step ([A-Z]) must be finished before step ([A-Z]) can begi
 
 def solve_dependency_order(dependency_graph):
     """
-    Variation of pyutils.graph.solve_dependency_order which only pops one unconstrained dependency (the min) per step.
+    Variation of pyutils.graph.Graph.solve_dependency_order which only pops one unconstrained dependency (the min) per
+    step.
     """
     dependency_graph = deepcopy(dependency_graph)
     dependencies = set(dependency_graph.keys())

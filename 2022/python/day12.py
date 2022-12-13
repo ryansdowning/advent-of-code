@@ -1,49 +1,10 @@
-import heapq
 import time
 from copy import deepcopy
-from typing import Callable, TypeVar
 
 from aocd import submit
 
 from pyutils import utils
-
-T = TypeVar("T")
-
-
-class Graph:
-    def __init__(self, graph: dict[T, list[T]]):
-        self.graph = graph
-
-    def dijkstra(self, source: T) -> dict[T, int]:
-        dist = {k: float("inf") for k in self.graph}
-        dist[source] = 0
-        seen = set()
-        heap = []
-        heapq.heappush(heap, (source, dist[source]))
-
-        while len(heap) > 0:
-            node, cost = heapq.heappop(heap)
-            seen.add(node)
-
-            for neighbor in self.graph[node]:
-                if neighbor not in seen:
-                    alt = cost + 1
-                    if alt < dist[neighbor]:
-                        dist[neighbor] = alt
-                        heapq.heappush(heap, (neighbor, alt))
-        return dist
-
-    def bfs(self, source: T, is_goal: Callable[[T], bool]):
-        visited = set()
-        queue = {source}
-        steps = 1
-        while queue:
-            queue = set(neighbor for node in queue for neighbor in self.graph[node] if neighbor not in visited)
-            visited |= queue
-            if any(is_goal(node) for node in queue):
-                return steps
-            steps += 1
-        return float("inf")
+from pyutils.algs.graph import Graph
 
 
 def get_neighbors(grid, i, j):
