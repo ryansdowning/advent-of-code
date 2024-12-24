@@ -35,7 +35,7 @@ _Optionally provide `-y` and `-d` to specify the year and list of days to run pe
 If you are using this repo as a template, the `start_day.py` file provides a quick way to get started for a given day's challenges, i.e:
 
 ```bash
-$ uv run pyutils.start_day -y 2021 -d 1
+$ uv run python -m pyutils.start_day -y 2021 -d 1
 ```
 
 Will download the inputs for day 1 of 2021 and create a `day01.py` file in `2021/python/` with a template to get started!
