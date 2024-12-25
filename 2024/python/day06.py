@@ -6,19 +6,7 @@ from aocd import submit
 
 from pyutils import utils
 
-DIRECTIONS = {
-    "^": (-1, 0),
-    ">": (0, 1),
-    "v": (1, 0),
-    "<": (0, -1),
-}
-
-TURN = {
-    "^": ">",
-    ">": "v",
-    "v": "<",
-    "<": "^",
-}
+DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
 
 class LabMap:
@@ -28,28 +16,24 @@ class LabMap:
         self.rows = len(data) // self.columns
         self.obstacles = set(divmod(i, self.columns) for i, c in enumerate(data) if c == "#")
         self.guard = divmod(data.index("^"), self.columns)
-        self.guard_direction = "^"
+        self.guard_direction = 0
 
-    def step_guard(self, turned=False):
+    def step_guard(self):
         step = DIRECTIONS[self.guard_direction]
         new_pos = (self.guard[0] + step[0], self.guard[1] + step[1])
         if new_pos in self.obstacles:
             self.turn_guard()
-            return self.step_guard(True)
+            return self.step_guard()
 
         self.guard = new_pos
-        return {
-            "guard": self.guard,
-            "inbounds": 0 <= self.guard[0] < self.rows and 0 <= self.guard[1] < self.columns,
-            "turned": turned,
-        }
+        return 0 <= self.guard[0] < self.rows and 0 <= self.guard[1] < self.columns
 
     def turn_guard(self):
-        self.guard_direction = TURN[self.guard_direction]
+        self.guard_direction = (self.guard_direction + 1) % 4
 
     def has_cycle(self):
         positions = defaultdict(set)
-        while self.step_guard()["inbounds"]:
+        while self.step_guard():
             if self.guard in positions[self.guard_direction]:
                 return True
             positions[self.guard_direction].add(self.guard)
@@ -62,7 +46,7 @@ def parse(data):
 
 def part_a(data: LabMap):
     positions = set([data.guard])
-    while data.step_guard()["inbounds"]:
+    while data.step_guard():
         positions.add(data.guard)
     return len(positions)
 
@@ -71,18 +55,21 @@ def part_b(data: LabMap):
     cycle_obstacles = set()
     initial_pos = data.guard
 
-    for i in range(data.columns):
-        for j in range(data.rows):
-            if (i, j) in data.obstacles:
-                continue
+    positions = set([initial_pos])
+    while data.step_guard():
+        positions.add(data.guard)
 
-            data.guard = initial_pos
-            data.guard_direction = "^"
+    for pos in positions:
+        data.guard = initial_pos
+        data.guard_direction = 0
 
-            data.obstacles.add((i, j))
-            if data.has_cycle():
-                cycle_obstacles.add((i, j))
-            data.obstacles.remove((i, j))
+        if pos in data.obstacles:
+            continue
+
+        data.obstacles.add(pos)
+        if data.has_cycle():
+            cycle_obstacles.add(pos)
+        data.obstacles.remove(pos)
 
     return len(cycle_obstacles)
 
