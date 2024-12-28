@@ -6,7 +6,9 @@ from aocd import submit
 
 from pyutils import utils
 
-DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+VERTICAL_DIRS = [(1, 0), (-1, 0)]
+HORIZONTAL_DIRS = [(0, 1), (0, -1)]
+DIRECTIONS = [*VERTICAL_DIRS, *HORIZONTAL_DIRS]
 
 
 class Map:
@@ -50,13 +52,7 @@ def parse(data):
 def get_fence_price(region: list[tuple[int, int]]) -> int:
     region = set(region)
     area = len(region)
-    perimeter = 0
-    for (x, y) in region:
-        for (dx, dy) in DIRECTIONS:
-            new_pos = (x + dx, y + dy)
-            if new_pos not in region:
-                perimeter += 1
-
+    perimeter = sum((x + dx, y + dy) not in region for x, y in region for dx, dy in DIRECTIONS)
     return area * perimeter
 
 
@@ -66,27 +62,26 @@ def part_a(regions: dict[str, list[list[tuple[int, int]]]]):
 
 def get_num_region_sides(region: list[tuple[int, int]]) -> int:
     region = set(region)
-    perimeter_edges = defaultdict(set)
+    perimeter_edges = defaultdict(lambda: defaultdict(list))
+
+    def update_perimeter(direction, pos, a, b):
+        if pos not in region:
+            perimeter_edges[direction][a].append(b)
 
     for x, y in region:
-        for dx, dy in DIRECTIONS:
+        for dx, dy in VERTICAL_DIRS:
             new_pos = (x + dx, y + dy)
-            if new_pos not in region:
-                perimeter_edges[(dx, dy)].add(new_pos)
+            update_perimeter((dx, dy), new_pos, x, y)
+        for dx, dy in HORIZONTAL_DIRS:
+            new_pos = (x + dx, y + dy)
+            update_perimeter((dx, dy), new_pos, y, x)
 
-    def get_sides(direction: tuple[int, int]) -> int:
-        is_vertical = direction == (1, 0) or direction == (-1, 0)
-        grouped_edges = defaultdict(list)
-        for x, y in perimeter_edges[direction]:
-            grouped_edges[x if is_vertical else y].append(y if is_vertical else x)
-
-        sides = 0
-        for edges in grouped_edges.values():
+    sides = 0
+    for directional_edges in perimeter_edges.values():
+        for edges in directional_edges.values():
             edges = sorted(edges)
             sides += 1 + sum(curr != prev + 1 for prev, curr in zip(edges, edges[1:]))
-        return sides
-
-    return sum(get_sides(direction) for direction in perimeter_edges)
+    return sides
 
 
 def get_discounted_fence_price(region: list[tuple[int, int]]) -> int:
