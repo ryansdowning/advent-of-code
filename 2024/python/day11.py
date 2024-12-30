@@ -7,45 +7,6 @@ from aocd import submit
 from pyutils import utils
 
 
-class ZeroRock:
-    def __init__(self):
-        self.step = 0
-        self.count = 1
-
-    def update(self):
-        if self.step == 5:
-            return [Rock(4048), Rock(1), Rock(4048), Rock(8096)]
-
-        if self.step == 0:
-            # Represents 1
-            pass
-        elif self.step == 1:
-            # Reperesents 2024
-            pass
-        elif self.step == 2:
-            # Represents 20 and 24
-            self.count = 2
-        elif self.step == 3:
-            # Represents 2 0 2 4
-            self.count = 4
-        elif self.step == 4:
-            # Represents 4048 1 4048 8096
-            pass
-
-        self.step += 1
-        return [self]
-
-
-class Rock:
-    def __init__(self, value: int):
-        self.value = value
-        self.count = 1
-
-    def update(self):
-        new_values = update_rock(self.value)
-        return [Rock(new_value) if new_value else ZeroRock() for new_value in new_values]
-
-
 def update_rock(value: int) -> tuple[int] | tuple[int, int]:
     if value == 0:
         return (1,)
