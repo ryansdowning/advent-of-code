@@ -185,12 +185,9 @@ def part_a(data):
 def part_b(data):
     warehouse, movements = data
     warehouse = WideWarehouse(warehouse)
-    print(warehouse)
     for movement in movements:
         direction = DIRECTIONS[movement]
         warehouse.move_robot(direction)
-    print()
-    print(warehouse)
 
     return sum(warehouse.get_box_gps_coordinates())
 
@@ -210,7 +207,7 @@ if __name__ == "__main__":
     stop_a = time.perf_counter()
     elapsed_a = stop_a - start_a
     print(f"Part A finished in {utils.format_time(elapsed_a)} with solution: {solution_a}, submitting...")
-    # submit(solution_a, part="a", day=15, year=2024)
+    submit(solution_a, part="a", day=15, year=2024)
 
     print("Running day 15 part B")
     start_b = time.perf_counter()
