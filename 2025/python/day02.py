@@ -1,3 +1,4 @@
+import bisect
 import time
 from copy import deepcopy
 
@@ -11,36 +12,61 @@ def parse(data):
     return recursively_split(data, [(",", None), ("-", lambda x: tuple(map(int, x)))])
 
 
-def part_a(data):
+def sum_in_ranges(candidates, data):
+    """Sum all candidates that fall within any range in data."""
+    ranges = sorted(data)
+    starts = [s for s, _ in ranges]
+
     total = 0
-    for start, end in data:
-        for i in range(start, end + 1):
-            num = str(i)
-            if len(num) % 2 == 1:
-                continue
-            mid = len(num) // 2
-            if num[:mid] == num[mid:]:
-                total += i
+    for num in candidates:
+        idx = bisect.bisect_right(starts, num) - 1
+        if idx >= 0 and ranges[idx][0] <= num <= ranges[idx][1]:
+            total += num
     return total
+
+
+def generate_doubled_ids(max_val):
+    """Generate all numbers that are a pattern repeated exactly twice."""
+    invalid = set()
+    max_digits = len(str(max_val))
+
+    for pattern_len in range(1, max_digits // 2 + 1):
+        start = 10 ** (pattern_len - 1)
+        for pattern in range(start, 10**pattern_len):
+            num = int(str(pattern) * 2)
+            if num <= max_val:
+                invalid.add(num)
+    return invalid
+
+
+def part_a(data):
+    max_val = max(end for _, end in data)
+    return sum_in_ranges(generate_doubled_ids(max_val), data)
+
+
+def generate_invalid_ids(max_val):
+    """Generate all numbers that are a pattern repeated 2+ times, up to max_val."""
+    invalid = set()
+    max_digits = len(str(max_val))
+
+    for pattern_len in range(1, max_digits // 2 + 1):
+        start = 10 ** (pattern_len - 1)
+        end = 10**pattern_len
+
+        for pattern in range(start, end):
+            pattern_str = str(pattern)
+            for repeats in range(2, max_digits // pattern_len + 1):
+                num = int(pattern_str * repeats)
+                if num > max_val:
+                    break
+                invalid.add(num)
+
+    return invalid
 
 
 def part_b(data):
-    total = 0
-    for start, end in data:
-        for i in range(start, end + 1):
-            num = str(i)
-            mid = len(num) // 2
-            for size in range(1, mid + 1):
-                for offset in range(mid):
-                    part = num[offset : offset + size]
-                    part_count = num.count(part)
-                    if part_count >= 2 and size * part_count == len(num):
-                        total += i
-                        break
-                else:
-                    continue
-                break
-    return total
+    max_val = max(end for _, end in data)
+    return sum_in_ranges(generate_invalid_ids(max_val), data)
 
 
 if __name__ == "__main__":
