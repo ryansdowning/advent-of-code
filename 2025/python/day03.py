@@ -14,7 +14,7 @@ def parse(data):
 def get_max_bank_joltage(bank: list[int], num_batteries: int) -> int:
     n = len(bank)
     start = 0
-    digits = []
+    joltage = 0
 
     for remaining in range(num_batteries, 0, -1):
         end = n - (remaining - 1)
@@ -22,10 +22,10 @@ def get_max_bank_joltage(bank: list[int], num_batteries: int) -> int:
         max_digit = max(segment)
         max_idx = segment.index(max_digit)
 
-        digits.append(max_digit)
+        joltage = joltage * 10 + max_digit
         start = start + max_idx + 1
 
-    return int("".join(map(str, digits)))
+    return joltage
 
 
 def part_a(data):
