@@ -4,7 +4,6 @@ from copy import deepcopy
 from aocd import submit
 
 from pyutils import utils
-from pyutils.parsing import recursively_split
 
 
 def parse(data):

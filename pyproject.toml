@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "advent-of-code-data>=2.0.4",
+    "advent-of-code-data>=2.1.1",
     "numpy>=2.2.1",
     "pandas>=2.2.3",
     "plotly>=5.24.1",
